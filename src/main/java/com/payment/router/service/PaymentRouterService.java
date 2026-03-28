@@ -54,13 +54,15 @@ public class PaymentRouterService {
                 messageId, decision.paymentType(), decision.reason());
 
         // ── Step 3: Build routed message with payment type ───────────────────
-        log.info("[ROUTER] STEP 3 - Building routed payment message | paymentType={}", decision.paymentType());
+        String routerId = "RTR-" + UUID.randomUUID().toString().toUpperCase();
+        log.info("[ROUTER] STEP 3 - Building routed payment message | paymentType={} | routerId={}", decision.paymentType(), routerId);
         RoutedPaymentMessage routedMessage = RoutedPaymentMessage.builder()
                 .originalMessageId(messageId)
                 .originalPaymentId(paymentId)
                 .paymentType(decision.paymentType())
                 .abaRoutingNumber(abaRoutingNumber)
                 .routingDecisionReason(decision.reason())
+                .routerId(routerId)
                 .originalMessage(message)
                 .build();
 

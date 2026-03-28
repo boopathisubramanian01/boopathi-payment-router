@@ -31,6 +31,10 @@ public class RoutedPaymentMessage {
     @JsonProperty("routingDecisionReason")
     private String routingDecisionReason;
 
+    /** Unique ID assigned by the router for this routing action. Included in all message headers. */
+    @JsonProperty("routerId")
+    private String routerId;
+
     @JsonProperty("originalMessage")
     private Pain001Message originalMessage;
 }

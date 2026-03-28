@@ -3,11 +3,14 @@ package com.payment.router.producer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.payment.router.model.Pain002Message;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -25,16 +28,22 @@ public class PaymentStatusProducer {
 
     public void publishRejection(Pain002Message pain002Message) {
         String paymentId = pain002Message.getOriginalPaymentId();
+        String routerId = "RTR-" + UUID.randomUUID().toString().toUpperCase();
         try {
             String payload = objectMapper.writeValueAsString(pain002Message);
 
-            log.info("[STATUS-PRODUCER] Publishing PAIN 002 rejection | paymentId={} | topic={} | errors={}",
-                    paymentId, statusTopic, pain002Message.getValidationErrors().size());
+            ProducerRecord<String, String> record = new ProducerRecord<>(statusTopic, paymentId, payload);
+            record.headers().add("router-message-id", routerId.getBytes(StandardCharsets.UTF_8));
+            record.headers().add("original-message-id", pain002Message.getOriginalMessageId().getBytes(StandardCharsets.UTF_8));
+            record.headers().add("transaction-status", Pain002Message.STATUS_REJECTED.getBytes(StandardCharsets.UTF_8));
 
-            var result = kafkaTemplate.send(statusTopic, paymentId, payload).get(10, TimeUnit.SECONDS);
+            log.info("[STATUS-PRODUCER] Publishing PAIN 002 rejection | paymentId={} | routerId={} | topic={} | errors={}",
+                    paymentId, routerId, statusTopic, pain002Message.getValidationErrors().size());
 
-            log.info("[STATUS-PRODUCER] ✅ PAIN 002 published | paymentId={} | topic={} | partition={} | offset={}",
-                    paymentId, statusTopic,
+            var result = kafkaTemplate.send(record).get(10, TimeUnit.SECONDS);
+
+            log.info("[STATUS-PRODUCER] ✅ PAIN 002 published | paymentId={} | routerId={} | partition={} | offset={}",
+                    paymentId, routerId,
                     result.getRecordMetadata().partition(),
                     result.getRecordMetadata().offset());
 

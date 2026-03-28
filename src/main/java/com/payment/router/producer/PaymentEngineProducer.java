@@ -36,16 +36,17 @@ public class PaymentEngineProducer {
             // Build ProducerRecord so we can attach message headers
             ProducerRecord<String, String> record = new ProducerRecord<>(engineTopic, paymentId, payload);
 
-            // ── Add payment-type header ──────────────────────────────────────
+            // ── Add message headers ──────────────────────────────────────────
             Headers headers = record.headers();
             headers.add("payment-type", paymentType.getBytes(StandardCharsets.UTF_8));
             headers.add("original-message-id", routedMessage.getOriginalMessageId().getBytes(StandardCharsets.UTF_8));
             headers.add("aba-routing-number", routedMessage.getAbaRoutingNumber().getBytes(StandardCharsets.UTF_8));
+            headers.add("router-message-id", routedMessage.getRouterId().getBytes(StandardCharsets.UTF_8));
 
-            log.info("[ENGINE-PRODUCER] Publishing routed payment | paymentId={} | paymentType={} | topic={}",
-                    paymentId, paymentType, engineTopic);
-            log.debug("[ENGINE-PRODUCER] Message headers: payment-type={} | aba={} | originalMessageId={}",
-                    paymentType, routedMessage.getAbaRoutingNumber(), routedMessage.getOriginalMessageId());
+            log.info("[ENGINE-PRODUCER] Publishing routed payment | paymentId={} | paymentType={} | routerId={} | topic={}",
+                    paymentId, paymentType, routedMessage.getRouterId(), engineTopic);
+            log.debug("[ENGINE-PRODUCER] Message headers: payment-type={} | aba={} | originalMessageId={} | routerId={}",
+                    paymentType, routedMessage.getAbaRoutingNumber(), routedMessage.getOriginalMessageId(), routedMessage.getRouterId());
 
             var result = kafkaTemplate.send(record).get(10, TimeUnit.SECONDS);
 
