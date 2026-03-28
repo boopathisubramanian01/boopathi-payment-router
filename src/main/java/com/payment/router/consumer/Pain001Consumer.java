@@ -5,9 +5,12 @@ import com.payment.router.model.Pain001Message;
 import com.payment.router.service.PaymentRouterService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 @Slf4j
 @Component
@@ -30,6 +33,9 @@ public class Pain001Consumer {
         long offset = record.offset();
         int partition = record.partition();
 
+        MDC.put("traceId", UUID.randomUUID().toString());
+        MDC.put("paymentId", key != null ? key : "N/A");
+        try {
         log.info("[CONSUMER] ── Received PAIN 001 message ──────────────────────────");
         log.info("[CONSUMER] topic={} | partition={} | offset={} | key={}",
                 record.topic(), partition, offset, key);
@@ -45,6 +51,9 @@ public class Pain001Consumer {
         } catch (Exception e) {
             log.error("[CONSUMER] ❌ Failed to process message | key={} | partition={} | offset={} | error={}",
                     key, partition, offset, e.getMessage(), e);
+        }
+        } finally {
+            MDC.clear();
         }
     }
 }

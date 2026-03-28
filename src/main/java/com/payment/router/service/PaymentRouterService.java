@@ -6,6 +6,7 @@ import com.payment.router.model.RoutedPaymentMessage;
 import com.payment.router.producer.PaymentEngineProducer;
 import com.payment.router.producer.PaymentStatusProducer;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -55,6 +56,7 @@ public class PaymentRouterService {
 
         // ── Step 3: Build routed message with payment type ───────────────────
         String routerId = "RTR-" + UUID.randomUUID().toString().toUpperCase();
+        MDC.put("routerId", routerId);
         log.info("[ROUTER] STEP 3 - Building routed payment message | paymentType={} | routerId={}", decision.paymentType(), routerId);
         RoutedPaymentMessage routedMessage = RoutedPaymentMessage.builder()
                 .originalMessageId(messageId)
