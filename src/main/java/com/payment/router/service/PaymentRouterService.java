@@ -99,7 +99,7 @@ public class PaymentRouterService {
                 .creationDateTime(LocalDateTime.now())
                 .originalMessageId(message.getMessageId())
                 .originalPaymentId(paymentId)
-                .transactionStatus(Pain002Message.STATUS_REJECTED)
+            .transactionStatus(Pain002Message.STATUS_RJCT)
                 .statusReasonCode(validation.errors().get(0).getRejectionCode())
                 .statusReasonDescription(validation.errors().get(0).getDescription())
                 .validationErrors(validation.errors())

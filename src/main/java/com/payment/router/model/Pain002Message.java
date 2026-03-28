@@ -12,6 +12,7 @@ import java.util.List;
 /**
  * ISO 20022 PAIN 002 - Payment Status Report
  * Generated when a payment is rejected due to validation failure.
+ * This router currently emits ISO status RJCT on validation failures.
  */
 @Data
 @Builder
@@ -78,5 +79,10 @@ public class Pain002Message {
     public static final String CODE_MISSING_ROUTING_NUMBER  = "RC01"; // Bank Identifier Incorrect
     public static final String CODE_INVALID_AMOUNT          = "AM01"; // Zero Amount
     public static final String CODE_MISSING_AMOUNT          = "AM02"; // Not Allowed Amount
-    public static final String STATUS_REJECTED              = "RJCT";
+    public static final String STATUS_RCVD                  = "RCVD";
+    public static final String STATUS_ACTC                  = "ACTC";
+    public static final String STATUS_ACCP                  = "ACCP";
+    public static final String STATUS_ACSP                  = "ACSP";
+    public static final String STATUS_PDNG                  = "PDNG";
+    public static final String STATUS_RJCT                  = "RJCT";
 }

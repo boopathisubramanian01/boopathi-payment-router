@@ -35,7 +35,7 @@ public class PaymentStatusProducer {
             ProducerRecord<String, String> record = new ProducerRecord<>(statusTopic, paymentId, payload);
             record.headers().add("router-message-id", routerId.getBytes(StandardCharsets.UTF_8));
             record.headers().add("original-message-id", pain002Message.getOriginalMessageId().getBytes(StandardCharsets.UTF_8));
-            record.headers().add("transaction-status", Pain002Message.STATUS_REJECTED.getBytes(StandardCharsets.UTF_8));
+            record.headers().add("transaction-status", Pain002Message.STATUS_RJCT.getBytes(StandardCharsets.UTF_8));
 
             log.info("[STATUS-PRODUCER] Publishing PAIN 002 rejection | paymentId={} | routerId={} | topic={} | errors={}",
                     paymentId, routerId, statusTopic, pain002Message.getValidationErrors().size());
